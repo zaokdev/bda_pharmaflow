@@ -3,13 +3,16 @@ import express from "express";
 import authRoutes from "./routes/auth.routes.js";
 import inventarioRoutes from "./routes/inventario.routes.js";
 import ventaRoutes from "./routes/venta.routes.js";
+import ensayosRoutes from "./routes/ensayos.routes.js";
 import { sessionConfig as sessionMiddleware } from "./middleware/sessionMiddleware.js";
+import connectMongo from "./db/mongo.js";
 
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 
 const app = express();
+connectMongo();
 
 app.use(express.json());
 app.use(sessionMiddleware);
@@ -17,6 +20,7 @@ app.use(sessionMiddleware);
 app.use("/api/auth", authRoutes);
 app.use("/api/stock", inventarioRoutes);
 app.use("/api/venta", ventaRoutes);
+app.use("/api/ensayos", ensayosRoutes);
 
 app.listen(PORT, () => {
   console.log(`Escuchando en el puerto ${PORT}`);
