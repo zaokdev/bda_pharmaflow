@@ -23,6 +23,8 @@ export default function initModels(sequelize) {
   lotes.hasMany(detalle_ventas, { as: "detalle_venta", foreignKey: "id_lote"});
   compras.belongsTo(medicamentos, { as: "id_medicamento_medicamento", foreignKey: "id_medicamento"});
   medicamentos.hasMany(compras, { as: "compras", foreignKey: "id_medicamento"});
+  lotes.belongsTo(medicamentos, { as: "id_medicamento_medicamento", foreignKey: "id_medicamento"});
+  medicamentos.hasMany(lotes, { as: "lotes", foreignKey: "id_medicamento"});
   usuarios.belongsTo(roles, { as: "id_rol_role", foreignKey: "id_rol"});
   roles.hasMany(usuarios, { as: "usuarios", foreignKey: "id_rol"});
   ventas.belongsTo(usuarios, { as: "id_usuario_usuario", foreignKey: "id_usuario"});

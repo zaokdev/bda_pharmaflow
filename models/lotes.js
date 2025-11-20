@@ -15,6 +15,14 @@ export default class lotes extends Model {
       allowNull: false,
       unique: "codigo"
     },
+    id_medicamento: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'medicamentos',
+        key: 'id'
+      }
+    },
     fecha_vencimiento: {
       type: DataTypes.DATE,
       allowNull: false
@@ -57,6 +65,13 @@ export default class lotes extends Model {
         using: "BTREE",
         fields: [
           { name: "id_compra" },
+        ]
+      },
+      {
+        name: "id_medicamento",
+        using: "BTREE",
+        fields: [
+          { name: "id_medicamento" },
         ]
       },
     ]
