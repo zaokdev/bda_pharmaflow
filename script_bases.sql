@@ -176,3 +176,47 @@ INSERT INTO lotes (codigo, fecha_vencimiento, stock, id_compra, id_medicamento) 
 ('LOT-AMOX-100', '2026-04-10 00:00:00', 30,  23, 3), 
 ('LOT-OME-335',  '2026-11-12 00:00:00', 50,  24, 5), 
 ('LOT-ELEC-02',  '2025-06-15 00:00:00', 150, 25, 20);
+
+
+-- 1. USUARIO: GERENTE
+-- Requisito: Acceso total a inventario y usuarios.
+-- Contraseña: 'GerentePassword1!'
+CREATE USER IF NOT EXISTS 'gerente'@'%' IDENTIFIED BY 'GerentePassword1!';
+
+-- Permisos: Le damos TODO sobre la base de datos pharmaflow_db
+GRANT ALL PRIVILEGES ON pharmaflow_db.* TO 'gerente'@'%';
+
+
+-- 2. USUARIO: FARMACÉUTICO
+-- Requisito: Solo puede registrar ventas y modificar lotes (stock).
+-- Contraseña: 'FarmaPassword1!'
+CREATE USER IF NOT EXISTS 'farmaceutico'@'%' IDENTIFIED BY 'FarmaPassword1!';
+
+-- A. Puede VER (SELECT) todo el inventario y medicamentos para saber qué vender
+GRANT SELECT ON pharmaflow_db.medicamentos TO 'farmaceutico'@'%';
+GRANT SELECT ON pharmaflow_db.lotes TO 'farmaceutico'@'%';
+GRANT SELECT ON pharmaflow_db.ventas TO 'farmaceutico'@'%'; 
+
+-- B. Puede CREAR (INSERT) nuevas ventas y detalles
+GRANT INSERT ON pharmaflow_db.ventas TO 'farmaceutico'@'%';
+GRANT INSERT ON pharmaflow_db.detalle_ventas TO 'farmaceutico'@'%';
+
+-- C. Puede MODIFICAR (UPDATE) SOLO el stock de los lotes
+GRANT UPDATE (stock) ON pharmaflow_db.lotes TO 'farmaceutico'@'%';
+
+
+-- 3. USUARIO: INVESTIGADOR
+-- Requisito: Solo puede consultar datos, sin modificar nada.
+-- Contraseña: 'InvestigaPassword1!'
+CREATE USER IF NOT EXISTS 'investigador'@'%' IDENTIFIED BY 'InvestigaPassword1!';
+
+GRANT SELECT ON pharmaflow_db.medicamentos TO 'investigador'@'%';
+GRANT SELECT ON pharmaflow_db.lotes TO 'investigador'@'%';
+GRANT SELECT ON pharmaflow_db.ventas TO 'investigador'@'%';
+GRANT SELECT ON pharmaflow_db.detalle_ventas TO 'investigador'@'%';
+
+
+-- ===================================================
+-- APLICAR CAMBIOS
+-- ===================================================
+FLUSH PRIVILEGES;

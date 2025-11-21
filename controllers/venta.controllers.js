@@ -24,6 +24,9 @@ export const sellMeds = async (req, res) => {
           lock: true,
         });
 
+        console.log("⏳ Simulando proceso lento... Bloqueo activo.");
+        await new Promise((resolve) => setTimeout(resolve, 5000)); // Espera 5 segundos
+
         if (!lote) {
           throw new Error("Lote no encontrado");
         }
@@ -75,5 +78,52 @@ export const sellMeds = async (req, res) => {
     res.status(201).json(venta_trans);
   } catch (e) {
     return res.status(500).json({ mensaje: e.message });
+  }
+};
+
+export const getSalesHistory = async (req, res) => {
+  try {
+    const ventas = await models.ventas.findAll({
+      // Ordenamos: Ventas más recientes primero
+      order: [["fecha", "DESC"]],
+
+      include: [
+        // 1. QUIÉN VENDIÓ
+        {
+          model: models.usuarios,
+          as: "id_usuario_usuario", // <--- COINCIDE CON TU initModels (Línea 29)
+          attributes: ["id", "usuario", "nombre_completo"], // Solo traemos lo necesario
+        },
+
+        // 2. DETALLES DE LA VENTA
+        {
+          model: models.detalle_ventas,
+          as: "detalle_venta", // <--- COINCIDE CON TU initModels (Línea 32)
+          include: [
+            // 3. QUÉ LOTE FUE
+            {
+              model: models.lotes,
+              as: "id_lote_lote", // <--- COINCIDE CON TU initModels (Línea 22)
+              attributes: ["id", "codigo", "fecha_vencimiento"],
+              include: [
+                // 4. QUÉ MEDICAMENTO ERA (Nombre)
+                {
+                  model: models.medicamentos,
+                  as: "id_medicamento_medicamento", // <--- COINCIDE CON TU initModels (Línea 26)
+                  attributes: ["nombre", "descripcion"],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+
+    return res.status(200).json(ventas);
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ message: "Error al obtener historial", error: error.message });
   }
 };
